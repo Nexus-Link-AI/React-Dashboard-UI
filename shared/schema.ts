@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -79,6 +80,26 @@ export const insertNetworkMetricsSchema = createInsertSchema(networkMetrics).omi
   id: true,
   timestamp: true,
 });
+
+// Relations
+export const nodesRelations = relations(nodes, ({ many }) => ({
+  temporalCommitments: many(temporalCommitments),
+}));
+
+export const trainingJobsRelations = relations(trainingJobs, ({ many }) => ({
+  temporalCommitments: many(temporalCommitments),
+}));
+
+export const temporalCommitmentsRelations = relations(temporalCommitments, ({ one }) => ({
+  node: one(nodes, {
+    fields: [temporalCommitments.nodeId],
+    references: [nodes.nodeId],
+  }),
+  trainingJob: one(trainingJobs, {
+    fields: [temporalCommitments.jobId],
+    references: [trainingJobs.jobId],
+  }),
+}));
 
 // Types
 export type Node = typeof nodes.$inferSelect;

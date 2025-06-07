@@ -1,4 +1,6 @@
 import { nodes, trainingJobs, temporalCommitments, networkMetrics, type Node, type InsertNode, type TrainingJob, type InsertTrainingJob, type TemporalCommitment, type InsertTemporalCommitment, type NetworkMetrics, type InsertNetworkMetrics, type NodeType } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   // Nodes
@@ -271,4 +273,95 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  async getNodes(): Promise<Node[]> {
+    return await db.select().from(nodes);
+  }
+
+  async getNodesByType(type: NodeType): Promise<Node[]> {
+    return await db.select().from(nodes).where(eq(nodes.type, type));
+  }
+
+  async createNode(insertNode: InsertNode): Promise<Node> {
+    const [node] = await db
+      .insert(nodes)
+      .values(insertNode)
+      .returning();
+    return node;
+  }
+
+  async updateNodeStatus(nodeId: string, status: string): Promise<Node | undefined> {
+    const [node] = await db
+      .update(nodes)
+      .set({ status })
+      .where(eq(nodes.nodeId, nodeId))
+      .returning();
+    return node;
+  }
+
+  async getTrainingJobs(): Promise<TrainingJob[]> {
+    return await db.select().from(trainingJobs);
+  }
+
+  async getActiveTrainingJobs(): Promise<TrainingJob[]> {
+    return await db
+      .select()
+      .from(trainingJobs)
+      .where(eq(trainingJobs.status, "training"));
+  }
+
+  async createTrainingJob(insertJob: InsertTrainingJob): Promise<TrainingJob> {
+    const [job] = await db
+      .insert(trainingJobs)
+      .values(insertJob)
+      .returning();
+    return job;
+  }
+
+  async updateTrainingJobProgress(jobId: string, progress: number, currentStep: number): Promise<TrainingJob | undefined> {
+    const [job] = await db
+      .update(trainingJobs)
+      .set({ progress, currentStep })
+      .where(eq(trainingJobs.jobId, jobId))
+      .returning();
+    return job;
+  }
+
+  async getTemporalCommitments(): Promise<TemporalCommitment[]> {
+    return await db.select().from(temporalCommitments);
+  }
+
+  async getActiveTemporalCommitments(): Promise<TemporalCommitment[]> {
+    return await db
+      .select()
+      .from(temporalCommitments)
+      .where(eq(temporalCommitments.status, "active"));
+  }
+
+  async createTemporalCommitment(insertCommitment: InsertTemporalCommitment): Promise<TemporalCommitment> {
+    const [commitment] = await db
+      .insert(temporalCommitments)
+      .values(insertCommitment)
+      .returning();
+    return commitment;
+  }
+
+  async getLatestNetworkMetrics(): Promise<NetworkMetrics | undefined> {
+    const [metrics] = await db
+      .select()
+      .from(networkMetrics)
+      .orderBy(desc(networkMetrics.timestamp))
+      .limit(1);
+    return metrics;
+  }
+
+  async createNetworkMetrics(insertMetrics: InsertNetworkMetrics): Promise<NetworkMetrics> {
+    const [metrics] = await db
+      .insert(networkMetrics)
+      .values(insertMetrics)
+      .returning();
+    return metrics;
+  }
+}
+
+export const storage = new DatabaseStorage();
