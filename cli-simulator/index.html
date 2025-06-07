@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexusLinkAI - Proof of Temporal Commitment CLI Simulator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        background: #0a0a0a;
+        color: #ffffff;
+        font-family: 'Courier New', monospace;
+        overflow: hidden;
+      }
+      
+      .terminal-container {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      }
+      
+      .terminal-header {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-bottom: 1px solid #333;
+        backdrop-filter: blur(10px);
+      }
+      
+      .terminal-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .logo {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, #3b82f6, #06b6d4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        animation: pulse 3s ease-in-out infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      
+      .terminal-screen {
+        flex: 1;
+        background: #000;
+        padding: 1rem;
+        overflow-y: auto;
+        position: relative;
+      }
+      
+      .terminal-line {
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+      }
+      
+      .command-line {
+        color: #22c55e;
+        margin-top: 1rem;
+      }
+      
+      .output-line {
+        color: #ffffff;
+        margin-left: 0;
+      }
+      
+      .input-container {
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+      }
+      
+      .prompt {
+        color: #22c55e;
+        margin-right: 0.5rem;
+      }
+      
+      .command-input {
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        outline: none;
+        flex: 1;
+        font-family: inherit;
+        font-size: 14px;
+      }
+      
+      .cursor {
+        animation: blink 1s infinite;
+      }
+      
+      @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+      }
+      
+      .quick-commands {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      .quick-cmd {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid #3b82f6;
+        color: #3b82f6;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.3s ease;
+      }
+      
+      .quick-cmd:hover {
+        background: rgba(59, 130, 246, 0.3);
+        transform: translateY(-2px);
+      }
+      
+      .status-bar {
+        background: rgba(0, 0, 0, 0.8);
+        padding: 0.5rem 1rem;
+        border-top: 1px solid #333;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        font-size: 12px;
+      }
+      
+      .status-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22c55e;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      /* Terminal text colors */
+      .text-blue-400 { color: #60a5fa; }
+      .text-green-400 { color: #4ade80; }
+      .text-orange-400 { color: #fb923c; }
+      .text-red-400 { color: #f87171; }
+      .text-purple-400 { color: #c084fc; }
+      .text-cyan-400 { color: #22d3ee; }
+      .text-yellow-400 { color: #facc15; }
+      .text-gray-400 { color: #9ca3af; }
+      .text-white { color: #ffffff; }
+      
+      .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="terminal-container">
+      <div class="terminal-header">
+        <div class="terminal-title">
+          <div class="logo">N</div>
+          <div>
+            <h1 style="font-size: 1.5rem; margin-bottom: 0.25rem;">NexusLinkAI PoTC CLI</h1>
+            <p style="color: #9ca3af; font-size: 0.875rem;">Proof of Temporal Commitment Simulator v2.1.0</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="terminal-screen" id="terminal">
+        <div class="terminal-line output-line">
+          <span class="text-blue-400">Welcome to NexusLinkAI Proof of Temporal Commitment CLI v2.1.0</span>
+        </div>
+        <div class="terminal-line output-line">
+          <span class="text-green-400">Type "help" for available commands</span>
+        </div>
+        <div class="terminal-line output-line">
+          <span class="text-cyan-400">Network Status: Connected to 2,688 nodes | Active Commitments: 1,089</span>
+        </div>
+        
+        <div class="input-container">
+          <span class="prompt">nexus@potc:~$</span>
+          <input type="text" class="command-input" id="commandInput" autofocus>
+          <span class="cursor" id="cursor">█</span>
+        </div>
+        
+        <div class="quick-commands">
+          <button class="quick-cmd" onclick="executeQuickCommand('potc status')">Status</button>
+          <button class="quick-cmd" onclick="executeQuickCommand('potc commit --duration 4h')">Commit</button>
+          <button class="quick-cmd" onclick="executeQuickCommand('potc benchmark')">Benchmark</button>
+          <button class="quick-cmd" onclick="executeQuickCommand('help')">Help</button>
+        </div>
+      </div>
+      
+      <div class="status-bar">
+        <div class="status-item">
+          <div class="status-indicator"></div>
+          <span>Connected to NexusLinkAI Network</span>
+        </div>
+        <div style="margin-left: auto;">
+          <span>Temporal Commitments: <span class="text-green-400">1,089 active</span></span>
+        </div>
+      </div>
+    </div>
+
+    <script src="cli-simulator.js"></script>
+  </body>
+</html>
