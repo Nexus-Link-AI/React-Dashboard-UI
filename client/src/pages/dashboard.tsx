@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NodeStatusGrid } from "@/components/node-status-grid";
 import { NetworkTopology } from "@/components/network-topology";
 import { TrainingProcessFlow } from "@/components/training-process-flow";
@@ -9,6 +10,7 @@ import logoPath from "@assets/file_00000000e78061f5a4384f2375398923_174932535988
 
 export default function Dashboard() {
   const { isConnected } = useWebSocket();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -17,12 +19,24 @@ export default function Dashboard() {
     }
   };
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card border-b border-border px-6 py-4 sticky top-0 z-50">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
+            {/* Sidebar Toggle Button */}
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+            >
+              <i className={`fas ${sidebarCollapsed ? 'fa-bars' : 'fa-times'}`}></i>
+            </button>
+            
             {/* NexusLinkAI Logo */}
             <div className="relative">
               <img 
@@ -54,31 +68,31 @@ export default function Dashboard() {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 bg-card border-r border-border min-h-screen">
+        <aside className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-card border-r border-border min-h-screen transition-all duration-300 ease-in-out`}>
           <nav className="p-4 space-y-2">
             <button onClick={() => scrollToSection('overview')} className="flex items-center space-x-3 px-4 py-3 bg-primary bg-opacity-20 text-primary rounded-lg w-full text-left">
-              <i className="fas fa-tachometer-alt"></i>
-              <span>Dashboard</span>
+              <i className="fas fa-tachometer-alt min-w-[16px]"></i>
+              {!sidebarCollapsed && <span>Dashboard</span>}
             </button>
             <button onClick={() => scrollToSection('overview')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
-              <i className="fas fa-network-wired"></i>
-              <span>Node Network</span>
+              <i className="fas fa-network-wired min-w-[16px]"></i>
+              {!sidebarCollapsed && <span>Node Network</span>}
             </button>
             <button onClick={() => scrollToSection('training-flow')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
-              <i className="fas fa-brain"></i>
-              <span>Training Jobs</span>
+              <i className="fas fa-brain min-w-[16px]"></i>
+              {!sidebarCollapsed && <span>Training Jobs</span>}
             </button>
             <button onClick={() => scrollToSection('cli-simulator')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
-              <i className="fas fa-clock"></i>
-              <span>Temporal Commitments</span>
+              <i className="fas fa-clock min-w-[16px]"></i>
+              {!sidebarCollapsed && <span>Temporal Commitments</span>}
             </button>
             <button onClick={() => scrollToSection('cli-simulator')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
-              <i className="fas fa-terminal"></i>
-              <span>CLI Simulator</span>
+              <i className="fas fa-terminal min-w-[16px]"></i>
+              {!sidebarCollapsed && <span>CLI Simulator</span>}
             </button>
             <button onClick={() => scrollToSection('metrics')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
-              <i className="fas fa-chart-line"></i>
-              <span>Analytics</span>
+              <i className="fas fa-chart-line min-w-[16px]"></i>
+              {!sidebarCollapsed && <span>Analytics</span>}
             </button>
           </nav>
         </aside>
