@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmailCollection } from "@/components/email-collection";
 
 export function WhitepaperSection() {
   return (
@@ -85,32 +86,29 @@ export function WhitepaperSection() {
         </Card>
       </div>
 
-      <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-lg p-6 border border-blue-500/20">
-        <div className="flex items-center justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-lg p-6 border border-blue-500/20">
           <div>
             <h3 className="text-xl font-semibold mb-2">Join the NexusLinkAI Community</h3>
             <p className="text-muted-foreground mb-4">
               Connect with developers, researchers, and contributors building the future of decentralized AI.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 mb-4">
               <Button variant="outline" className="border-blue-500/50 hover:bg-blue-500/10">
                 <i className="fab fa-discord mr-2"></i>Discord
               </Button>
               <Button variant="outline" className="border-green-500/50 hover:bg-green-500/10">
                 <i className="fab fa-github mr-2"></i>GitHub
               </Button>
-              <Button variant="outline" className="border-purple-500/50 hover:bg-purple-500/10">
-                <i className="fas fa-envelope mr-2"></i>Newsletter
-              </Button>
             </div>
-          </div>
-          <div className="hidden md:block">
-            <div className="text-right">
+            <div className="text-right md:text-left">
               <div className="text-2xl font-bold text-blue-400">2,500+</div>
               <div className="text-sm text-muted-foreground">Community Members</div>
             </div>
           </div>
         </div>
+        
+        <EmailCollection />
       </div>
     </div>
   );

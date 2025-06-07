@@ -146,16 +146,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const commitmentStats = await storage.getActiveTemporalCommitments();
             output = formatPotcStatus(commitmentStats);
           } else if (args[0] === "commit") {
-            // Simulate commitment creation
+            const duration = args.includes("--duration") ? parseInt(args[args.indexOf("--duration") + 1]) || 4 : 4;
+            const nodeType = args.includes("--nodes") ? args[args.indexOf("--nodes") + 1] || "compute" : "compute";
             const commitment = await storage.createTemporalCommitment({
-              nodeId: `compute_${Math.floor(Math.random() * 847) + 1}`,
+              nodeId: `${nodeType}_${Math.floor(Math.random() * 847) + 1}`,
               jobId: null,
-              commitmentDuration: 4,
-              endTime: new Date(Date.now() + 4 * 60 * 60 * 1000),
+              commitmentDuration: duration,
+              endTime: new Date(Date.now() + duration * 60 * 60 * 1000),
               status: "active",
               computationalPower: Math.floor(Math.random() * 1000 + 500),
             });
             output = formatCommitmentResult(commitment);
+          } else if (args[0] === "history") {
+            const allCommitments = await storage.getTemporalCommitments();
+            output = formatCommitmentHistory(allCommitments.slice(-5));
+          } else if (args[0] === "validate") {
+            output = formatValidationProcess();
+          } else if (args[0] === "benchmark") {
+            output = formatBenchmarkResults();
           }
           break;
           
@@ -331,4 +339,47 @@ function formatTrainingStatus(jobs: any[]): string {
   
   output += '</div>';
   return output;
+}
+
+function formatCommitmentHistory(commitments: any[]): string {
+  let output = '<div class="text-blue-400">═══════════ TEMPORAL COMMITMENT HISTORY ═══════════</div><div class="mt-2">';
+  
+  commitments.forEach((commitment, index) => {
+    const timeLeft = Math.max(0, Math.floor((new Date(commitment.endTime).getTime() - Date.now()) / (1000 * 60 * 60)));
+    const statusColor = commitment.status === "active" ? "text-green-400" : "text-gray-400";
+    output += `<div class="mb-1">
+      <span class="${statusColor}">●</span> Node: <span class="text-cyan-400">${commitment.nodeId}</span> | 
+      Duration: <span class="text-orange-400">${commitment.commitmentDuration}h</span> | 
+      Remaining: <span class="text-purple-400">${timeLeft}h</span>
+    </div>`;
+  });
+  
+  output += '</div>';
+  return output;
+}
+
+function formatValidationProcess(): string {
+  return `<div class="text-blue-400">═══════════ POTC VALIDATION SIMULATION ═══════════</div>
+    <div class="mt-2">
+      <div class="text-green-400">✓ Cryptographic proof verification completed</div>
+      <div class="text-green-400">✓ Temporal lock mechanisms validated</div>
+      <div class="text-green-400">✓ Consensus threshold reached (67% agreement)</div>
+      <div class="text-green-400">✓ Node commitment integrity confirmed</div>
+      <div class="text-orange-400 animate-pulse">⚡ Validation score: 98.7% network confidence</div>
+    </div>`;
+}
+
+function formatBenchmarkResults(): string {
+  const throughput = (Math.random() * 50 + 150).toFixed(1);
+  const latency = (Math.random() * 5 + 10).toFixed(2);
+  const efficiency = (Math.random() * 10 + 85).toFixed(1);
+  
+  return `<div class="text-blue-400">═══════════ NETWORK BENCHMARK RESULTS ═══════════</div>
+    <div class="mt-2">
+      <div>Transaction Throughput: <span class="text-green-400">${throughput} TPS</span></div>
+      <div>Average Latency: <span class="text-orange-400">${latency}ms</span></div>
+      <div>Consensus Efficiency: <span class="text-purple-400">${efficiency}%</span></div>
+      <div>Network Reliability: <span class="text-cyan-400">99.94% uptime</span></div>
+      <div class="text-blue-400 mt-2">Temporal commitment protocol outperforming PoS by 23.7%</div>
+    </div>`;
 }

@@ -3,6 +3,7 @@ import { NetworkTopology } from "@/components/network-topology";
 import { TrainingProcessFlow } from "@/components/training-process-flow";
 import { CLISimulator } from "@/components/cli-simulator";
 import { NetworkMetrics } from "@/components/network-metrics";
+import { WhitepaperSection } from "@/components/whitepaper-section";
 import { useWebSocket } from "@/hooks/use-websocket";
 import logoPath from "@assets/file_00000000e78061f5a4384f2375398923_1749325359882.png";
 
@@ -104,6 +105,11 @@ export default function Dashboard() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold mb-6">Network Performance Metrics</h2>
             <NetworkMetrics />
+          </section>
+
+          {/* Whitepaper & Documentation */}
+          <section className="mb-8">
+            <WhitepaperSection />
           </section>
         </main>
       </div>

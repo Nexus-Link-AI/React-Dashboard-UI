@@ -182,8 +182,10 @@ export function CLISimulator() {
           <h4 className="text-sm font-semibold mb-2 text-purple-400">PoTC Commands</h4>
           <div className="text-xs space-y-1 text-gray-300">
             <div><code className="text-green-400">potc status</code> - View temporal commitments</div>
-            <div><code className="text-green-400">potc commit</code> - Create commitment</div>
+            <div><code className="text-green-400">potc commit --duration 8h</code> - Create commitment</div>
             <div><code className="text-green-400">potc history</code> - View commitment history</div>
+            <div><code className="text-green-400">potc validate</code> - Run validation process</div>
+            <div><code className="text-green-400">potc benchmark</code> - Network performance test</div>
           </div>
         </div>
       </div>
