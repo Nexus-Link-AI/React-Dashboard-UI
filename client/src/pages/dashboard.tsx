@@ -10,6 +10,13 @@ import logoPath from "@assets/file_00000000e78061f5a4384f2375398923_174932535988
 export default function Dashboard() {
   const { isConnected } = useWebSocket();
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -49,37 +56,37 @@ export default function Dashboard() {
         {/* Sidebar */}
         <aside className="w-64 bg-card border-r border-border min-h-screen">
           <nav className="p-4 space-y-2">
-            <a href="#dashboard" className="flex items-center space-x-3 px-4 py-3 bg-primary bg-opacity-20 text-primary rounded-lg">
+            <button onClick={() => scrollToSection('overview')} className="flex items-center space-x-3 px-4 py-3 bg-primary bg-opacity-20 text-primary rounded-lg w-full text-left">
               <i className="fas fa-tachometer-alt"></i>
               <span>Dashboard</span>
-            </a>
-            <a href="#nodes" className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors">
+            </button>
+            <button onClick={() => scrollToSection('overview')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
               <i className="fas fa-network-wired"></i>
               <span>Node Network</span>
-            </a>
-            <a href="#training" className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors">
+            </button>
+            <button onClick={() => scrollToSection('training-flow')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
               <i className="fas fa-brain"></i>
               <span>Training Jobs</span>
-            </a>
-            <a href="#temporal" className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors">
+            </button>
+            <button onClick={() => scrollToSection('cli-simulator')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
               <i className="fas fa-clock"></i>
               <span>Temporal Commitments</span>
-            </a>
-            <a href="#cli" className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors">
+            </button>
+            <button onClick={() => scrollToSection('cli-simulator')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
               <i className="fas fa-terminal"></i>
               <span>CLI Simulator</span>
-            </a>
-            <a href="#analytics" className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors">
+            </button>
+            <button onClick={() => scrollToSection('metrics')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
               <i className="fas fa-chart-line"></i>
               <span>Analytics</span>
-            </a>
+            </button>
           </nav>
         </aside>
 
         {/* Main Content */}
         <main className="flex-1 p-6 overflow-y-auto">
           {/* Network Overview */}
-          <section className="mb-8">
+          <section id="overview" className="mb-8">
             <h2 className="text-3xl font-bold mb-6">Network Overview</h2>
             
             {/* Node Status Grid */}
@@ -92,23 +99,23 @@ export default function Dashboard() {
           </section>
 
           {/* Training Process Flow */}
-          <section className="mb-8">
+          <section id="training-flow" className="mb-8">
             <TrainingProcessFlow />
           </section>
 
           {/* PoTC CLI Simulator */}
-          <section className="mb-8">
+          <section id="cli-simulator" className="mb-8">
             <CLISimulator />
           </section>
 
           {/* Network Metrics */}
-          <section className="mb-8">
+          <section id="metrics" className="mb-8">
             <h2 className="text-2xl font-bold mb-6">Network Performance Metrics</h2>
             <NetworkMetrics />
           </section>
 
           {/* Whitepaper & Documentation */}
-          <section className="mb-8">
+          <section id="documentation" className="mb-8">
             <WhitepaperSection />
           </section>
         </main>

@@ -28,6 +28,19 @@ export function CLISimulator() {
     }
   }, [lines]);
 
+  useEffect(() => {
+    // Auto-focus the input when component mounts
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  const handleTerminalClick = () => {
+    if (inputRef.current && !isExecuting) {
+      inputRef.current.focus();
+    }
+  };
+
   const executeCommand = async (command: string) => {
     if (!command.trim()) return;
 
@@ -145,7 +158,11 @@ export function CLISimulator() {
         </div>
       </div>
 
-      <div className="bg-black rounded-lg p-4 h-96 overflow-y-auto terminal-text" ref={terminalRef}>
+      <div 
+        className="bg-black rounded-lg p-4 h-96 overflow-y-auto terminal-text cursor-text" 
+        ref={terminalRef}
+        onClick={handleTerminalClick}
+      >
         {lines.map((line, index) => (
           <div 
             key={index}
