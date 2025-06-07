@@ -55,12 +55,23 @@ export function CLISimulator() {
         return;
       } else {
         // Send command to backend
-        const response = await apiRequest("POST", "/api/cli/execute", {
-          command: mainCommand,
-          args,
+        const response = await fetch("/api/cli/execute", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            command: mainCommand,
+            args,
+          }),
         });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
-        output = data.output;
+        output = data.output || `<div class="text-yellow-400">Command executed but no output received</div>`;
       }
 
       // Add output to terminal
@@ -71,9 +82,11 @@ export function CLISimulator() {
       }]);
 
     } catch (error) {
+      console.error("CLI command error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Command execution failed";
       setLines(prev => [...prev, {
         type: "output",
-        content: `<div class="text-red-400">Error: Command execution failed</div>`,
+        content: `<div class="text-red-400">Error: ${errorMessage}</div>`,
         timestamp: new Date(),
       }]);
     }
@@ -96,7 +109,11 @@ export function CLISimulator() {
   };
 
   const clearTerminal = () => {
-    executeCommand("clear");
+    setLines([]);
+  };
+
+  const showNodeStatus = () => {
+    executeCommand("node status --all");
   };
 
   return (
@@ -112,7 +129,7 @@ export function CLISimulator() {
             <i className="fas fa-play mr-2"></i>Run Simulation
           </Button>
           <Button 
-            onClick={() => executeCommand("node status --all")}
+            onClick={showNodeStatus}
             className="bg-blue-600 hover:bg-blue-700 text-white"
             disabled={isExecuting}
           >
@@ -144,15 +161,16 @@ export function CLISimulator() {
         {/* Command Input */}
         <div className="flex items-center mt-2">
           <span className="text-green-400 mr-2">nexus@cli:~$</span>
-          <Input
+          <input
             ref={inputRef}
             value={currentCommand}
             onChange={(e) => setCurrentCommand(e.target.value)}
             onKeyDown={handleKeyPress}
-            className="bg-transparent border-none text-white flex-1 p-0 focus:ring-0"
+            className="bg-transparent border-none text-white flex-1 p-0 focus:outline-none focus:ring-0 terminal-text"
             placeholder={isExecuting ? "Executing..." : "Enter command..."}
             disabled={isExecuting}
             autoFocus
+            style={{ outline: 'none', boxShadow: 'none' }}
           />
           {isExecuting && <span className="text-white animate-pulse ml-2">█</span>}
         </div>
