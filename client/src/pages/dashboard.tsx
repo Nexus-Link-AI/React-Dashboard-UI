@@ -4,6 +4,7 @@ import { TrainingProcessFlow } from "@/components/training-process-flow";
 import { CLISimulator } from "@/components/cli-simulator";
 import { NetworkMetrics } from "@/components/network-metrics";
 import { useWebSocket } from "@/hooks/use-websocket";
+import logoPath from "@assets/file_00000000e78061f5a4384f2375398923_1749325359882.png";
 
 export default function Dashboard() {
   const { isConnected } = useWebSocket();
@@ -14,11 +15,13 @@ export default function Dashboard() {
       <header className="bg-card border-b border-border px-6 py-4 sticky top-0 z-50">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
-            {/* Central N Logo */}
+            {/* NexusLinkAI Logo */}
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center font-bold text-xl animate-pulse-slow text-white">
-                N
-              </div>
+              <img 
+                src={logoPath} 
+                alt="NexusLinkAI Logo" 
+                className="w-12 h-12 object-contain animate-pulse-slow"
+              />
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-bounce-slow"></div>
             </div>
             <div>

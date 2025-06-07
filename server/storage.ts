@@ -177,6 +177,8 @@ export class MemStorage implements IStorage {
       ...insertNode,
       id: this.currentId++,
       lastSeen: new Date(),
+      metadata: insertNode.metadata || null,
+      status: insertNode.status || "active",
     };
     this.nodes.set(node.id, node);
     return node;
@@ -208,6 +210,12 @@ export class MemStorage implements IStorage {
       ...insertJob,
       id: this.currentId++,
       startTime: new Date(),
+      status: insertJob.status || "pending",
+      currentPhase: insertJob.currentPhase || "initialization",
+      currentStep: insertJob.currentStep || 1,
+      progress: insertJob.progress || 0,
+      metadata: insertJob.metadata || null,
+      estimatedCompletion: insertJob.estimatedCompletion || null,
     };
     this.trainingJobs.set(job.id, job);
     return job;
@@ -239,6 +247,8 @@ export class MemStorage implements IStorage {
       ...insertCommitment,
       id: this.currentId++,
       startTime: new Date(),
+      status: insertCommitment.status || "active",
+      jobId: insertCommitment.jobId || null,
     };
     this.temporalCommitments.set(commitment.id, commitment);
     return commitment;
@@ -254,6 +264,7 @@ export class MemStorage implements IStorage {
       ...insertMetrics,
       id: this.currentId++,
       timestamp: new Date(),
+      metrics: insertMetrics.metrics || null,
     };
     this.networkMetrics.set(metrics.id, metrics);
     return metrics;

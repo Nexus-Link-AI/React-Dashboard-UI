@@ -17,7 +17,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/nodes/stats", async (req, res) => {
     try {
-      const nodeStats = {};
+      const nodeStats: Record<string, { total: number; active: number }> = {};
       for (const type of nodeTypes) {
         const nodes = await storage.getNodesByType(type);
         nodeStats[type] = {
