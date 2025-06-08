@@ -1,6 +1,6 @@
-import { nodes, trainingJobs, temporalCommitments, networkMetrics, type Node, type InsertNode, type TrainingJob, type InsertTrainingJob, type TemporalCommitment, type InsertTemporalCommitment, type NetworkMetrics, type InsertNetworkMetrics, type NodeType } from "@shared/schema";
+import { nodes, trainingJobs, temporalCommitments, networkMetrics, validators, consensusRounds, validatorVotes, type Node, type InsertNode, type TrainingJob, type InsertTrainingJob, type TemporalCommitment, type InsertTemporalCommitment, type NetworkMetrics, type InsertNetworkMetrics, type Validator, type InsertValidator, type ConsensusRound, type ValidatorVote, type NodeType } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, gte } from "drizzle-orm";
 
 export interface IStorage {
   // Nodes
@@ -23,6 +23,16 @@ export interface IStorage {
   // Network Metrics
   getLatestNetworkMetrics(): Promise<NetworkMetrics | undefined>;
   createNetworkMetrics(metrics: InsertNetworkMetrics): Promise<NetworkMetrics>;
+  
+  // Validators
+  getValidators(): Promise<Validator[]>;
+  getActiveValidators(): Promise<Validator[]>;
+  createValidator(validator: InsertValidator): Promise<Validator>;
+  updateValidatorScore(validatorId: string, potcScore: number): Promise<Validator | undefined>;
+  
+  // Consensus
+  getConsensusRounds(limit?: number): Promise<ConsensusRound[]>;
+  getValidatorVotes(roundId: number): Promise<ValidatorVote[]>;
 }
 
 export class MemStorage implements IStorage {
