@@ -169,7 +169,7 @@ export function PoTCConsensusDashboard() {
               <Activity className="h-5 w-5 text-purple-500" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Current Round</p>
-                <p className="text-2xl font-bold">{consensusStats?.currentRound || 0}</p>
+                <p className="text-2xl font-bold">{consensusStats && typeof consensusStats === 'object' && 'currentRound' in consensusStats ? (consensusStats as ConsensusStats).currentRound : 0}</p>
               </div>
             </div>
           </CardContent>
@@ -181,7 +181,7 @@ export function PoTCConsensusDashboard() {
               <Zap className="h-5 w-5 text-orange-500" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Rounds</p>
-                <p className="text-2xl font-bold">{consensusStats?.totalRounds || 0}</p>
+                <p className="text-2xl font-bold">{consensusStats && typeof consensusStats === 'object' && 'totalRounds' in consensusStats ? (consensusStats as ConsensusStats).totalRounds : 0}</p>
               </div>
             </div>
           </CardContent>
@@ -200,11 +200,11 @@ export function PoTCConsensusDashboard() {
           <div className="flex gap-4">
             <Button 
               onClick={startConsensusSimulation}
-              disabled={consensusStats?.isSimulationRunning}
+              disabled={consensusStats && typeof consensusStats === 'object' && 'isSimulationRunning' in consensusStats ? (consensusStats as ConsensusStats).isSimulationRunning : false}
               className="flex items-center gap-2"
             >
               <Activity className="h-4 w-4" />
-              {consensusStats?.isSimulationRunning ? "Simulation Running..." : "Start Consensus Round"}
+              {consensusStats && typeof consensusStats === 'object' && 'isSimulationRunning' in consensusStats && (consensusStats as ConsensusStats).isSimulationRunning ? "Simulation Running..." : "Start Consensus Round"}
             </Button>
             <Button 
               variant="outline" 
@@ -229,7 +229,7 @@ export function PoTCConsensusDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {validators?.slice(0, 8).map((validator: Validator) => {
+              {Array.isArray(validators) && validators.slice(0, 8).map((validator: Validator) => {
                 const potcScore = calculatePotcScore(validator);
                 const timeRemaining = getCommitmentTimeRemaining(validator.endTime);
                 
@@ -267,7 +267,7 @@ export function PoTCConsensusDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {recentRounds?.slice(0, 6).map((round: ConsensusRound) => (
+              {Array.isArray(recentRounds) && recentRounds.slice(0, 6).map((round: ConsensusRound) => (
                 <div key={round.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <div className="flex items-center gap-2">
