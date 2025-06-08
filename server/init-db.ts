@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { nodes, trainingJobs, temporalCommitments, networkMetrics } from "@shared/schema";
+import { nodes, trainingJobs, temporalCommitments, networkMetrics, validators } from "@shared/schema";
 
 export async function initializeDatabase() {
   try {
@@ -127,6 +127,36 @@ export async function initializeDatabase() {
     };
 
     await db.insert(networkMetrics).values(metricsData);
+
+    // Initialize validators with PoTC data
+    const validatorInserts = [];
+    const validatorNodeIds = nodeInserts.filter(n => n.type === "validator").slice(0, 50); // Top 50 validator nodes
+    
+    for (let i = 0; i < validatorNodeIds.length; i++) {
+      const node = validatorNodeIds[i];
+      const stakeAmount = Math.floor(Math.random() * 90000 + 10000); // 10k-100k TEMPO tokens
+      const commitmentHours = [24, 48, 72, 168, 336, 720][Math.floor(Math.random() * 6)]; // 1 day to 1 month
+      const commitmentDuration = commitmentHours * 60; // in minutes
+      const startTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000); // Started within last week
+      const endTime = new Date(startTime.getTime() + commitmentDuration * 60 * 1000);
+      
+      validatorInserts.push({
+        validatorId: `validator_${i + 1}`,
+        nodeId: node.nodeId,
+        stakeAmount,
+        commitmentDuration,
+        endTime,
+        uptime: Math.floor(Math.random() * 15 + 85), // 85-100% uptime
+        reputation: Math.floor(Math.random() * 20 + 80), // 80-100 reputation
+        potcScore: 0, // Will be calculated by consensus engine
+        status: endTime > new Date() ? "active" : "expired",
+        blocksProposed: Math.floor(Math.random() * 50),
+        blocksValidated: Math.floor(Math.random() * 200 + 100),
+        slashingEvents: Math.random() > 0.9 ? 1 : 0, // 10% have been slashed once
+      });
+    }
+
+    await db.insert(validators).values(validatorInserts);
 
     console.log("Database initialized successfully!");
   } catch (error) {

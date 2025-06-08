@@ -2,7 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { insertTrainingJobSchema, insertTemporalCommitmentSchema, nodeTypes } from "@shared/schema";
+import { potcEngine } from "./potc-consensus";
+import { insertTrainingJobSchema, insertTemporalCommitmentSchema, insertValidatorSchema, nodeTypes } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API Routes
@@ -184,6 +185,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ output });
     } catch (error) {
       res.status(500).json({ error: "CLI command execution failed" });
+    }
+  });
+
+  // PoTC Consensus API Routes
+  app.get("/api/validators", async (req, res) => {
+    try {
+      const validators = await storage.getValidators();
+      res.json(validators);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch validators" });
+    }
+  });
+
+  app.get("/api/validators/active", async (req, res) => {
+    try {
+      const validators = await storage.getActiveValidators();
+      res.json(validators);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch active validators" });
+    }
+  });
+
+  app.post("/api/validators", async (req, res) => {
+    try {
+      const validatorData = insertValidatorSchema.parse(req.body);
+      const validator = await storage.createValidator(validatorData);
+      res.json(validator);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid validator data" });
+    }
+  });
+
+  app.get("/api/consensus/stats", async (req, res) => {
+    try {
+      const stats = await potcEngine.getConsensusStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch consensus stats" });
+    }
+  });
+
+  app.get("/api/consensus/rounds", async (req, res) => {
+    try {
+      const rounds = await storage.getConsensusRounds(10);
+      res.json(rounds);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch consensus rounds" });
+    }
+  });
+
+  app.post("/api/consensus/start", async (req, res) => {
+    try {
+      await potcEngine.runConsensusSimulation();
+      res.json({ message: "Consensus simulation started" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to start consensus" });
+    }
+  });
+
+  app.post("/api/consensus/update-scores", async (req, res) => {
+    try {
+      await potcEngine.updateValidatorScores();
+      res.json({ message: "Validator scores updated" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update scores" });
     }
   });
 

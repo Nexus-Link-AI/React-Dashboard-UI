@@ -35,7 +35,7 @@ export interface IStorage {
   getValidatorVotes(roundId: number): Promise<ValidatorVote[]>;
 }
 
-export class MemStorage implements IStorage {
+export class MemStorage {
   private nodes: Map<number, Node>;
   private trainingJobs: Map<number, TrainingJob>;
   private temporalCommitments: Map<number, TemporalCommitment>;
@@ -371,6 +371,52 @@ export class DatabaseStorage implements IStorage {
       .values(insertMetrics)
       .returning();
     return metrics;
+  }
+
+  async getValidators(): Promise<Validator[]> {
+    return await db.select().from(validators);
+  }
+
+  async getActiveValidators(): Promise<Validator[]> {
+    return await db
+      .select()
+      .from(validators)
+      .where(and(
+        eq(validators.status, "active"),
+        gte(validators.endTime, new Date())
+      ));
+  }
+
+  async createValidator(insertValidator: InsertValidator): Promise<Validator> {
+    const [validator] = await db
+      .insert(validators)
+      .values(insertValidator)
+      .returning();
+    return validator;
+  }
+
+  async updateValidatorScore(validatorId: string, potcScore: number): Promise<Validator | undefined> {
+    const [validator] = await db
+      .update(validators)
+      .set({ potcScore })
+      .where(eq(validators.validatorId, validatorId))
+      .returning();
+    return validator;
+  }
+
+  async getConsensusRounds(limit: number = 10): Promise<ConsensusRound[]> {
+    return await db
+      .select()
+      .from(consensusRounds)
+      .orderBy(desc(consensusRounds.roundNumber))
+      .limit(limit);
+  }
+
+  async getValidatorVotes(roundId: number): Promise<ValidatorVote[]> {
+    return await db
+      .select()
+      .from(validatorVotes)
+      .where(eq(validatorVotes.roundId, roundId));
   }
 }
 
