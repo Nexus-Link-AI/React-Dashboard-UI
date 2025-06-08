@@ -5,6 +5,7 @@ import { TrainingProcessFlow } from "@/components/training-process-flow";
 import { CLISimulator } from "@/components/cli-simulator";
 import { NetworkMetrics } from "@/components/network-metrics";
 import { WhitepaperSection } from "@/components/whitepaper-section";
+import { PoTCConsensusDashboard } from "@/components/potc-consensus-dashboard";
 import { useWebSocket } from "@/hooks/use-websocket";
 import logoPath from "@assets/file_00000000e78061f5a4384f2375398923_1749325359882.png";
 
@@ -82,6 +83,10 @@ export default function Dashboard() {
               <i className="fas fa-brain min-w-[16px]"></i>
               {!sidebarCollapsed && <span>Training Jobs</span>}
             </button>
+            <button onClick={() => scrollToSection('potc-consensus')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
+              <i className="fas fa-shield-alt min-w-[16px]"></i>
+              {!sidebarCollapsed && <span>PoTC Consensus</span>}
+            </button>
             <button onClick={() => scrollToSection('cli-simulator')} className="flex items-center space-x-3 px-4 py-3 text-muted-foreground hover:bg-muted rounded-lg transition-colors w-full text-left">
               <i className="fas fa-clock min-w-[16px]"></i>
               {!sidebarCollapsed && <span>Temporal Commitments</span>}
@@ -115,6 +120,12 @@ export default function Dashboard() {
           {/* Training Process Flow */}
           <section id="training-flow" className="mb-8">
             <TrainingProcessFlow />
+          </section>
+
+          {/* PoTC Consensus Dashboard */}
+          <section id="potc-consensus" className="mb-8">
+            <h2 className="text-3xl font-bold mb-6">Proof of Temporal Commitment Consensus</h2>
+            <PoTCConsensusDashboard />
           </section>
 
           {/* PoTC CLI Simulator */}
